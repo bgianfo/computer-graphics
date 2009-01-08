@@ -1,0 +1,63 @@
+                 Homework 2 - Line Drawing and Edge Tables
+
+			  <YOUR NAME HERE>
+
+=========================================================================
+
+PART 1:  LINE DRAWING
+
+Derive the equations for lines which have a large negative slope (m < -1).
+Due to the limitations of text, represent subscripts using C-style
+notation - e.g., (x[p],y[p]).  Complete the following:
+
+            m =
+           m' =
+          m'' =
+       d[old] =
+ d[new] for S =
+d[new] for SE =
+    initial d =
+           dS =
+          dSE =
+
+=========================================================================
+
+PART 2:  EDGE TABLE
+
+For each of the following figures, show the entries which would be put
+into the edge table for the figure when preparing to use the polygon
+fill algorithm discussed in class.  Provide the following information
+for each edge:
+
+	edge name (e.g., AB, BC, CD, etc.)
+	scan line which first intersects this edge
+	Ymax for the edge
+	initial X for the edge
+	dx and dy values for the edge
+
+When filling in your answers, name your edges to reflect a left-to-right,
+bottom-to-top drawing order, and list the names in alphabetical order by
+name.  See the homework description for an example.
+
+-------------------------------------------------------------------------
+
+Polygon 1 (triangle):
+
+	Edge	Scan	Ymax	 X	dx	dy
+	====	====	====	===	==	==
+
+-------------------------------------------------------------------------
+
+Polygon 2 (quad):
+
+	Edge	Scan	Ymax	 X	dx	dy
+	====	====	====	===	==	==
+
+-------------------------------------------------------------------------
+
+Polygon 3 (complex figure):
+
+	Edge	Scan	Ymax	 X	dx	dy
+	====	====	====	===	==	==
+
+-------------------------------------------------------------------------
