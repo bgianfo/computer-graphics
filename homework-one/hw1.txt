@@ -1,0 +1,127 @@
+               Homework 1 - Evolution of Computer Graphics
+
+			  Brian Gianforcaro 
+
+=========================================================================
+
+Part 1 - List of Video Segments Viewed
+
+If you are describing more than three segments, include descriptions of
+the other segments using the same format as the first three.
+
+-------------------------------------------------------------------------
+
+Segment 1
+   Segment title:	  	Luxo Jr.	
+   Segment author(s):	        Pixar	
+   SIGGRAPH edition number:	#24
+   Year segment was produced:   1986	
+
+Segment 2
+   Segment title:	        Pencil Test	
+   Segment author(s):	        Apple Computer	
+   SIGGRAPH edition number:	#51
+   Year segment was produced:   1989	
+
+Segment 3
+   Segment title:		The recent future robot: HELPER Z
+   Segment author(s):		Katsuyuki Suzuki
+   SIGGRAPH edition number:	#156
+   Year segment was produced:	2007
+
+=========================================================================
+
+Part 2 - Summary
+
+Write a two-page summary (roughly 120 to 140 lines)  which discusses
+the three (or more) video segments you watched.  Be sure to consider
+(at least) the following issues:
+
+	* What is the quality of the image - is it jagged, smooth, etc.?
+
+	* Is the image solid or wire-frame?
+
+	* Is the 3-D image a real 3-D or a faked one using 2-D?
+	  Support your answer (i.e., what clues did you use?).
+
+	* How is color used?
+
+	* Is there animation?
+
+	* How complex are the images?
+
+	* How has computer graphics changed over the years represented
+	  here?
+
+-------------------------------------------------------------------------
+
+All three video's were for the most part smooth animations and had very few if 
+any jagged edges. I felt like "Luxo Jr." and "HELPER Z" had the most advanced 
+quality out of my three selections, despite it's age.  The lighting, shadows, 
+and the overall quality of the geometry is far better than "Pencil Test".
+I expected the quality of "Pencil Test" to be far worse than it was, the fact 
+that it was entirely mad on an Apple II amazed me.  The quality vs. computing 
+power for that time period is very impressive to me. It seems like most other 
+features in Electronic Theater around this time were rendered on large super 
+computers. The geometry for the most part wasn't incredibly complex.
+"HELPER Z"'s quality seemed to fluctuate throughout the segment. The big 
+open city scenes were very impressive and very nice quality, however the 
+zoomed in character scenes I felt had a significantly lesser quality, they 
+lacked important shadows, or maybe a certain physical depth to the character?
+
+All of the segment's were solid images, no wire-frame's. All characters in "Luxo Jr."
+were solid desk lamps. "Pencil Test" had a pencil built out of rectangles and 
+various other office desk like objects. "HELPER Z" has robots, humans, cars and 
+a beautifully rendered city scape I believe that "Luxo Jr.", "Pencil Test", 
+"HELPER Z" are all real 3-D image. I believe this because of how the shadows are
+cast in all the segments, as well as the shading of colors on objects. Their
+was an obvious depth to all of three segments. 
+
+Colors in all of the three segments colors were used in conjunction with 
+shading/blending. "HELPER Z" obviously had the most advanced usage of shading
+because of it's recent release date. Yet the colors in "Luxo Jr." were far more
+vibrant and life like than the dull bland colors used in "Pencil Test". I believe 
+this is probably because of the advanced shading that was able to be done on the 
+hardware that Luxo Jr. was rendered on. 
+
+All three segments did indeed have animation, all very good smooth, intricate 
+animation. Pencil Test again was lacking in this area, not so smooth. One thing that
+was mentioned in class but I noticed again was the emotion depicted in "Luxo Jr.". 
+The intricate movements of the figures and the way they move definitely convey's a lot
+of emotion you would have never really thought an inanimate object could have. I had 
+a similar feeling when viewing "HELPER Z" except that a human was portraying emotion in 
+a very conflicting way instead of an inanimate object.
+
+"HELPER Z" was a very complex animation, including city scapes, humans and robots. 
+The city had stop lights, roof's for door-way's and intricate trimmings for window panes.
+The human character has an animated face, conveying emotion and showing fear, dangling in 
+the wind of the city. The robot it self in the segment is also a very detailed model.
+"Luxo Jr." and "Pencil Test" were not as complex but still fairly involved. "Pencil Test"
+used a office desk as it's main scene which had a bunch of different objects on it. 
+The actual storyboard for "Pencil Test" was most likely far more complicated than that of
+"HELPER Z". "Pencil Test" has a more involved story and is arguably more complex if you 
+compare them by giving a handicap for the year they were created. 
+
+I feel like the three selections clearly showed a progression in computer graphics through
+the years. The overall basic concepts have stayed the same for the most part. However
+The advancement in rendering technology and physical hardware has enabled us to do things
+previously unthinkable because of lack of computing power. The increase in detail and 
+general photo realise is where the segments point me too. With better shading and modelling 
+and rendering tools the image and quality of the films increased greatly. Models in "Pencil Test"
+were more or less rounded basic geometric shapes drawn together to represent a familiar object.
+Where in contrast in "HELPER Z" all objects were full models using multiple types of non traditional
+geometry to represent a object in more detail and in a far more realistic way than was possible 
+in the early 1989. 
+
+
+It wasn't very clear if all of the production on "Pencil Test" was done on an Apple II or
+If all production,animation and rendering were done on a single Apple II. Or possibly even
+multiple Apple II's working in conjunction with each other. Given the time period I find it
+kind of hard to believe they could render that amount of data in a timely fashion on that 
+kind of hardware.
+
+It's also very interesting how back in the day all feature's were created with pretty much 
+custom animation tools. Where as now we have two or three main players in the game that 
+a large amount of all animations are created with that aren't HUGE studio productions. 
+It kind of shows how far we've come with the technology. 
+=========================================================================
