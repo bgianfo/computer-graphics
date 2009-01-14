@@ -1,0 +1,31 @@
+You have retrieved the following files:
+
+	header.mak		For recreating the Makefile
+
+	clipPolygon.c		Skeleton for clipPolygon()
+	drawFilledPolygon.c	Skeleton for drawFilledPolygon()
+	drawLine.c		Skeleton for drawLine()
+
+	support.c		Support routines used by other test files
+	testline1.c		Simple tests of drawLine()
+	testclip1.c		Simple tests of clipPolygon()
+	testfill1.c		Simple tests of drawFilledPolygon()
+	testfill2.c		More interesting tests of drawFilledPolygon()
+
+This version of header.mak contains the proper -I option to allow the
+compiler to find the header files used by these source files
+(clipPolygon.h, drawFilledPolygon.h, drawLine.h, and support.h); note
+that they must be included with the <> form of the #include statement -
+e.g., #include <drawLine.h> - in your code.
+
+To use these:
+
+	* Replace the bodies of the functions in the clipPolygon.c,
+	  drawFilledPolygon.c, and drawLine.c files with your
+	  implementation
+
+	* Run "makemake > Makefile".
+
+	* Run "make".
+
+	* Run the various test programs.
