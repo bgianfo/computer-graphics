@@ -1,6 +1,6 @@
 /* 
-** File:	drawLine.?
-** Author:	?
+** File:	drawLine.c
+** Author: Brian Gianforcaro - bjg1955@rit.edu
 ** Template by:	Warren R. Carithers
 */
 
