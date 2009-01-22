@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -std=c99
-LDOPTS = -lGL -lX11 -lglut -lglu
+LDOPTS = -lGL -lX11 -lglut -lGLU
 LDFLAGS = -I/usr/X11R6/include -I/opt/local/include -L/opt/local/lib  -L/usr/X11R6/lib  $(LDOPTS)
 SOURCE = project1.c
 OUT = out 
