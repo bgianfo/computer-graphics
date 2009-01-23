@@ -1,0 +1,53 @@
+This directory contains test files for project 2, as follows:
+
+	c/			Directory with C versions of demos
+	cpp/			Directory with C++ versions of demos
+
+	header.mak		For recreating the Makefile
+
+	clipPolygon.h		Prototype for clipPolygon()
+	drawFilledPolygon.h	Prototype for drawFilledPolygon()
+	drawLine.h		Prototype for the drawLine()
+	support.h		Prototypes for various support routines
+
+	clipPolygon.skel	Skeleton for clipPolygon()
+	drawFilledPolygon.skel	Skeleton for drawFilledPolygon()
+	drawLine.skel		Skeleton for drawLine()
+
+	support.src		Support routines used by other test files
+	testline1.src		Simple tests of drawLine()
+	testclip1.src		Simple tests of clipPolygon()
+	testfill1.src		Simple tests of drawFilledPolygon()
+	testfill2.src		More interesting tests of drawFilledPolygon()
+
+Note that the executables come in two forms - x86 and SPARC - for use on
+the appropriate types of systems.
+
+This version of header.mak contains the proper -I option to allow the
+compiler to find these four header files if you #include them using the
+<> form - e.g., #include <drawLine.h> - in your code.
+
+Each of the .skel and .src files can be compiled as either C or C++.
+The compiled versions of the demo programs in the subdirectories were,
+in fact, compiled from these .src files using Sun's 'cc' and 'CC' compilers
+(with, of course, "fleshed out" versions of the .skel files).
+
+To use these:
+
+	* Copy all the .src and .skel files into your working directory,
+	  and change the .src and .skel suffix to .c, .C, or .cpp
+	  (according to your personal preference).  DO NOT COPY THE .h
+	  FILES.  Note - you must be sure to copy in the support.src
+	  file, as it contains several routines used by the other test
+	  files.
+
+	* Copy the header.mak file into your working directory.
+
+	* Replace the bodies of the functions in the (former) .skel
+	  files with your implementations.
+
+	* Run "makemake > Makefile".
+
+	* Run "make".
+
+	* Run the various test programs.
