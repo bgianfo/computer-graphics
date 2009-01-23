@@ -5,8 +5,8 @@
 # To use the GNU C or C++ compiler, you will need to add one of the
 # following lines:
 #
-#   CC = gcc
-#   CCC = g++
+CC = gcc
+CCC = g++
 #
 # Also, if you want to take advantage of GDB's extra debugging features,
 # change "-g" in the CFLAGS and LIBFLAGS macro definitions to "-ggdb".
@@ -20,7 +20,7 @@ LIBDIRS = -L$(OWGLUTLIB)
 
 LDLIBS = -lglut -lGLU -lGL -lGLw -lXmu -lXext -lX11 -lm
 
-CFLAGS = -g $(INCLUDE)
+CFLAGS = -g -Wall -pedantic -std=c99 $(INCLUDE)
 CCFLAGS =  $(CFLAGS)
 CXXFLAGS = $(CFLAGS)
 
