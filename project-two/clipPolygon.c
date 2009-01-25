@@ -32,23 +32,19 @@ int inbounds(GLint x, GLint y, GLint x0, GLint y0, GLint x1, GLint y1) {
 }
 
 /*
- *  inbounds - determine if the given vertex is inbounds   
+ *  intersection - determine the intersection between the line/boudingedge
  *
  *  args: 
  *  	  X1 - x for point one 
  *  	  Y1 - y for point one
  *  	  X2 - x for point two
  *  	  Y2 - y for point two
- *
+ *	     out - pointer to an array to store intersection
  *  	  x0 - bounding bottom-left x
  *  	  y0 - bounding bottom left y
  *  	  x1 - bounding top right x
  *  	  y1 - bounding top right y
- *
- * return: 0 - false
- *         1 - true
  */
-
 
 void intersection (const int BOUND, GLint X1, GLint Y1,
 			      GLint X2, GLint Y2,  
@@ -92,7 +88,6 @@ void intersection (const int BOUND, GLint X1, GLint Y1,
  *		  outv - array to store them in
  *		  out - index to store the x and y at
  */
-
 
 void output(GLint x, GLint y, GLint outv[][2], GLint *out ) {
     outv[*out][0] = x;
