@@ -1,6 +1,6 @@
 /* 
-** File:	drawFilledPolygon.?
-** Author:	?
+** File:	drawFilledPolygon.c
+** Author:	Brian Gianforcaro
 ** Template by:	Warren R. Carithers
 */
 
@@ -22,7 +22,7 @@ typedef struct {
  * 		q - edge to remove after
  */
 void remove (Edge *q) {
-	Edge * p = q->next;
+	Edge *p = q->next;
 	q->next = p->next;
 	free (p);
 }
@@ -34,8 +34,8 @@ void remove (Edge *q) {
  * 		newedge - edge to insert
  */
 void insertEdge (Edge *list, Edge *newedge) {
-	Edge * p, * q = list;
-	p = q->next;
+	Edge *q = list;
+	Edge *p = q->next;
 	while (p != NULL) {
 		if (newedge->miny_x < p->miny_x) {
 			p = NULL;
@@ -100,17 +100,19 @@ void fill (int scan, Edge *active) {
 void drawFilledPolygon( GLint n, GLint v[][2] ) {
 	const static int WINDOW_HEIGHT = 300; //Detailed in project description
 
+	//Parse our verticies into "all_edges"
 	Edge * all_edges[n];
-	all_edges[0] = (Edge *) malloc (sizeof (Edge));
-	for (int i = 0; i < n-1; i++) {
+	for (int i = 0; i < n; i++) {
 		int rollover;
-		if (i == n) { 
+		if ((i+1) == n) { 
 			rollover = 0;
 		} else {
 			rollover = i+1;
-			all_edges[rollover] = (Edge *) malloc (sizeof (Edge));
 		}
+
+		all_edges[i] = (Edge *) malloc (sizeof (Edge));
 		all_edges[i]->miny = v[i][1];
+
 		int max_x;
 		if (v[rollover][1] < all_edges[i]->miny) {
 			all_edges[i]->miny = v[rollover][1];
@@ -123,14 +125,18 @@ void drawFilledPolygon( GLint n, GLint v[][2] ) {
 			all_edges[i]->miny_x = v[i][0];
 			max_x = v[rollover][0];
 		}
+
 		if (max_x == all_edges[i]->miny_x) {
 			all_edges[i]->slope = 0;
 		} else {
 			all_edges[i]->slope = (all_edges[i]->maxy - all_edges[i]->miny) / (max_x - all_edges[i]->miny_x);
 		}
+
 		all_edges[i]->next = NULL;
 	}
-	int start_scanline = 300;
+
+	//Find the starting scan line and top of the polygon
+	int start_scanline = WINDOW_HEIGHT;
 	int end_scanline = 0;
 	for (int i = 0; i < n; i++) {
 		if (all_edges[i]->miny < start_scanline) {
@@ -142,11 +148,12 @@ void drawFilledPolygon( GLint n, GLint v[][2] ) {
 		}
 	}
 
+	//Construct our Global Edge Table
 	Edge * glet [WINDOW_HEIGHT];
 	for (int i = start_scanline; i <= end_scanline; i++) {
 		for (int j = 0; j < n; j++) {
 			if ( (all_edges[j]->miny == i) ) { //&& (all_edges[j].slope != 0) ) {
-				if ( glet[i] == NULL) {
+				if (NULL == &glet[i]) {
 					glet[i] = all_edges[j];
 				} else {
 					insertEdge(glet[i], all_edges[j]);
@@ -155,24 +162,32 @@ void drawFilledPolygon( GLint n, GLint v[][2] ) {
 		}
 	}
 
-	
+	//Initialize the Active Edge Table	
 	Edge * aet;
 	int i = start_scanline;
 	aet = glet[i];
+	//Get along with the the algorithm
 	while (i <= end_scanline) {
 		fill(i, aet);
 		i++;
 		update(i,aet);
-		insertEdge(aet, glet[i]);
-	}
-
-	for (int i = 0; i < WINDOW_HEIGHT; i++) {
-		if (glet[i] != NULL) {
-			free(glet[i]);
+		if (NULL != &glet[i]) {
+			insertEdge(aet, glet[i]);
 		}
 	}
 
-	for (int i = 0; i < n-1; i++) {
+
+	//Make sure all memory is free.
+	for (int i = 0; i < WINDOW_HEIGHT; i++) {
+		if (&glet[i] != NULL) {
+			free(glet[i]);
+		}
 	}
+	for (int i = 0; i < n; i++) {
+		if (&all_edges[i] != NULL) {
+			free(all_edges[i]);
+		}
+	}
+
 }
 
