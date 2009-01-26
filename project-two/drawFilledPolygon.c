@@ -5,75 +5,87 @@
 */
 
 #include <GL/glut.h>
-
+#include <stdlib.h>
 #include <drawFilledPolygon.h>
 
 typedef struct {
-	int ymax;
-	int x; 
-	int dx;
-	int dy;
-	int sum;
-	struct Bucket *next;
-} Bucket;
+	int miny;
+	int maxy;
+	int miny_x;
+	float slope;
+	struct Edge *next;
+} Edge;
 
-void deleteAfter (Bucket *q) {
-	Bucket * p = q->next;
+/**
+ * remove - remove the edge after the specified
+ * args:
+ * 		q - edge to remove after
+ */
+void remove (Edge *q) {
+	Edge * p = q->next;
 	q->next = p->next;
 	free (p);
 }
 
-void insertEdge (Bucket *list, Bucket *edge) {
-	Bucket * p, * q = list;
+/*
+ * insertEdge - perform a smart insert on the specified new edge.
+ * args:
+ * 		list - current scan line
+ * 		newedge - edge to insert
+ */
+void insertEdge (Edge *list, Edge *newedge) {
+	Edge * p, * q = list;
 	p = q->next;
 	while (p != NULL) {
-		if (edge->xIntersect < p->xIntersect) {
+		if (newedge->miny_x < p->miny_x) {
 			p = NULL;
 		} else {
 			q = p;
 			p = p->next;
 		}
 	}
-	edge->next = q->next;
-	q->next = edge;
+	newedge->next = q->next;
+	q->next = newedge;
 }
 
-void update (int scan, Bucket * active) {
-	Bucket * q = active, * p = active->next;
+/*
+ * update - prune and update x values in the active edge list
+ * args:
+ * 		scan - current scan line
+ * 		active - current active edge list
+ */
+void update (int scan, Edge * active) {
+	Edge * q = active, * p = active->next;
 	while (p) {
-		if (scan >= p->yUpper) f
+		if (scan >= p->maxy) {
 			p = p->next;
-			deleteAfter(q);
+			remove(q);
 		} else {
-			p->xIntersect = p->xIntersect + p->dxPerScan;
+			p->miny_x = p->miny_x + (1/p->slope);
 			q = p;
 			p = p->next;
 		}
 	}
 }
 
-void fill (int scan, Bucket *active) {
-	Bucket * p1, * p2;
+/*
+ * fill - fill the scan for a specified active edge list
+ * args:
+ * 		scan - current scan line
+ * 		active - current active edge list
+ */
+void fill (int scan, Edge *active) {
+	Edge * p1, * p2;
 	p1 = active->next;
 	glBegin(GL_POINTS);
 	while (p1) {
 		p2 = p1->next;
-		for (int i = p1->xIntersect; i < p2->xIntersect; i++) {
+		for (int i = p1->miny_x; i < p2->miny_x; i++) {
 			glVertex2i((int)i,scan);
 			p1 = p2->next;
 		}
 	}
 	glEnd();
-}
-
-void build (int scan, Bucket *active, Bucket *edges[]) {
-	Bucket *p, *q;
-	p = edges[scan]->next;
-	while (p) {
-		q = p->next;
-		insertEdge (active, p);
-		p = q;
-	}
 }
 
 /*
@@ -86,25 +98,81 @@ void build (int scan, Bucket *active, Bucket *edges[]) {
 */
 
 void drawFilledPolygon( GLint n, GLint v[][2] ) {
+	const static int WINDOW_HEIGHT = 300; //Detailed in project description
 
-	Bucket * edges[WINDOW_HEIGHT], * active;
-	for (int i = 0; i < WINDOW_HEIGHT; i++) {
-		edges[i] = (Edge *) malloc (sizeof (Edge));
-		edges[i]->next = NULL;
+	Edge * all_edges[n];
+	all_edges[0] = (Edge *) malloc (sizeof (Edge));
+	for (int i = 0; i < n-1; i++) {
+		int rollover;
+		if (i == n) { 
+			rollover = 0;
+		} else {
+			rollover = i+1;
+			all_edges[rollover] = (Edge *) malloc (sizeof (Edge));
+		}
+		all_edges[i]->miny = v[i][1];
+		int max_x;
+		if (v[rollover][1] < all_edges[i]->miny) {
+			all_edges[i]->miny = v[rollover][1];
+			all_edges[i]->maxy = v[i][1];
+
+			all_edges[i]->miny_x = v[rollover][0];
+			max_x = v[i][0];
+		} else {
+			all_edges[i]->maxy = v[rollover][1];
+			all_edges[i]->miny_x = v[i][0];
+			max_x = v[rollover][0];
+		}
+		if (max_x == all_edges[i]->miny_x) {
+			all_edges[i]->slope = 0;
+		} else {
+			all_edges[i]->slope = (all_edges[i]->maxy - all_edges[i]->miny) / (max_x - all_edges[i]->miny_x);
+		}
+		all_edges[i]->next = NULL;
 	}
-	buildEdgeList (cnt, pts, edges);
-	active = (Bucket *) malloc (sizeof (Bucket));
-	active->next = NULL;
-	/* your implementation here */
-	for (int scanl = 0; scan < WINDOW_HEIGHT; scan++) {
-		build (scan, active, edges);
-		if (active->next) {
-			fill(scan, active);
-			update(scan, active);
-			resort(active);
+	int start_scanline = 300;
+	int end_scanline = 0;
+	for (int i = 0; i < n; i++) {
+		if (all_edges[i]->miny < start_scanline) {
+			start_scanline = all_edges[i]->miny;
+		}
+		 
+		if (all_edges[i]->maxy > end_scanline) {
+			end_scanline = all_edges[i]->maxy;
 		}
 	}
-		/* Free edge records that have been malloc’ed ... */
 
+	Edge * glet [WINDOW_HEIGHT];
+	for (int i = start_scanline; i <= end_scanline; i++) {
+		for (int j = 0; j < n; j++) {
+			if ( (all_edges[j]->miny == i) ) { //&& (all_edges[j].slope != 0) ) {
+				if ( glet[i] == NULL) {
+					glet[i] = all_edges[j];
+				} else {
+					insertEdge(glet[i], all_edges[j]);
+				}
+			}
+		}
+	}
+
+	
+	Edge * aet;
+	int i = start_scanline;
+	aet = glet[i];
+	while (i <= end_scanline) {
+		fill(i, aet);
+		i++;
+		update(i,aet);
+		insertEdge(aet, glet[i]);
+	}
+
+	for (int i = 0; i < WINDOW_HEIGHT; i++) {
+		if (glet[i] != NULL) {
+			free(glet[i]);
+		}
+	}
+
+	for (int i = 0; i < n-1; i++) {
+	}
 }
 
