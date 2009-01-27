@@ -5,88 +5,76 @@
 */
 
 #include <GL/glut.h>
-#include <stdlib.h>
+#include <stdlib.h> //needed for abs()
 #include <drawFilledPolygon.h>
 
 typedef struct {
-	int miny;
-	int maxy;
-	int miny_x;
-	float slope;
+	int y_max;
+        int x;
+        int dx;
+        int dy;
+        int sum;
 	struct Edge *next;
 } Edge;
 
+
 /**
- * remove - remove the edge after the specified
+ * update - update the value of the X using dx and dy without floating point .
  * args:
- * 		q - edge to remove after
+ *      b - The bucket that is to be adjusted
+ *
+ * return - The updated bucket
  */
-void remove (Edge *q) {
-	Edge *p = q->next;
-	q->next = p->next;
-	free (p);
+Edge* update(Edge *e) {
+    if( 0 != e->dx && 0 != e->dy ) {
+        e->sum += e->dx;
+        while(e->sum >= abs(e->dy)) {
+            if(0 <= e->dy) {
+                ++(e->x);
+            } else {
+                --(e->x);
+            }
+            e->sum -= abs(e->dy);
+        }
+    }
+    return e;
 }
 
-/*
- * insertEdge - perform a smart insert on the specified new edge.
- * args:
- * 		list - current scan line
- * 		newedge - edge to insert
+/**
+ * sortline - Iterate through, sort on x-values.  
+ * args: 
+ *       b - pointer to starting "bucket"
+ *
+ * return - The initial element in the sorted line
  */
-void insertEdge (Edge *list, Edge *newedge) {
-	Edge *q = list;
-	Edge *p = q->next;
-	while (p != NULL) {
-		if (newedge->miny_x < p->miny_x) {
-			p = NULL;
-		} else {
-			q = p;
-			p = p->next;
-		}
-	}
-	newedge->next = q->next;
-	q->next = newedge;
+Edge* sortline(Edge *line) {
+    Edge *nb = line->next; 
+    int count;;
+    for ( count = 1; NULL != nb; nb = nb->next ) {
+        count++;
+    }
+    
+    Edge *first = line;
+    for( int i = 0; i < count; i++) {
+        Edge *curr = line;
+        nb = line->next;
+        while( NULL != nb ) {
+            if( (nb->x < curr->x) || 
+                ( nb->x == curr->x && nb->dx < curr->dx) ) {
+                if(curr == first) {
+                    first = nb;
+                }
+                curr->next = nb->next;
+                nb->next = curr;
+                nb = curr->next;
+            } else {
+                curr = nb;
+                nb = nb->next;
+            }
+        }
+    } return first;
 }
 
-/*
- * update - prune and update x values in the active edge list
- * args:
- * 		scan - current scan line
- * 		active - current active edge list
- */
-void update (int scan, Edge * active) {
-	Edge * q = active, * p = active->next;
-	while (p) {
-		if (scan >= p->maxy) {
-			p = p->next;
-			remove(q);
-		} else {
-			p->miny_x = p->miny_x + (1/p->slope);
-			q = p;
-			p = p->next;
-		}
-	}
-}
-
-/*
- * fill - fill the scan for a specified active edge list
- * args:
- * 		scan - current scan line
- * 		active - current active edge list
- */
-void fill (int scan, Edge *active) {
-	Edge * p1, * p2;
-	p1 = active->next;
-	glBegin(GL_POINTS);
-	while (p1) {
-		p2 = p1->next;
-		for (int i = p1->miny_x; i < p2->miny_x; i++) {
-			glVertex2i((int)i,scan);
-			p1 = p2->next;
-		}
-	}
-	glEnd();
-}
 
 /*
 ** drawFilledPolygon
@@ -98,96 +86,116 @@ void fill (int scan, Edge *active) {
 */
 
 void drawFilledPolygon( GLint n, GLint v[][2] ) {
-	const static int WINDOW_HEIGHT = 300; //Detailed in project description
 
-	//Parse our verticies into "all_edges"
-	Edge * all_edges[n];
-	for (int i = 0; i < n; i++) {
-		int rollover;
-		if ((i+1) == n) { 
-			rollover = 0;
-		} else {
-			rollover = i+1;
-		}
+    int minScan , maxScan = v[0][1]; 
+    //find min/max y-values
+    for(int i = 0; i < n; i++) { 
+        if(v[i][1] > maxScan) {
+            maxScan = v[i][1];
+        }
 
-		all_edges[i] = (Edge *) malloc (sizeof (Edge));
-		all_edges[i]->miny = v[i][1];
+        if(v[i][1] < minScan) {
+            minScan = v[i][1]; 
+        }
+    }
 
-		int max_x;
-		if (v[rollover][1] < all_edges[i]->miny) {
-			all_edges[i]->miny = v[rollover][1];
-			all_edges[i]->maxy = v[i][1];
+    // Initialize edge table to max possible size
+    Edge *glet[maxScan];
+    Edge *ael = NULL;  
 
-			all_edges[i]->miny_x = v[rollover][0];
-			max_x = v[i][0];
-		} else {
-			all_edges[i]->maxy = v[rollover][1];
-			all_edges[i]->miny_x = v[i][0];
-			max_x = v[rollover][0];
-		}
+    for( int i = 0; i <= maxScan; i++) {  
+        glet[i] = NULL;
+    }
 
-		if (max_x == all_edges[i]->miny_x) {
-			all_edges[i]->slope = 0;
-		} else {
-			all_edges[i]->slope = (all_edges[i]->maxy - all_edges[i]->miny) / (max_x - all_edges[i]->miny_x);
-		}
+    Edge *curr, *nBkt;
+    int scanline;
+    //Populate the global edge table
+    for(int i = 0; i < n; i++) {  
+        curr = (Edge *)malloc(sizeof(Edge));
+        //proper rollover for end edge
+        int j = ( i + 1 ) % n; 
+        if( v[i][1] > v[j][1] ) {
+            curr->y_max = v[i][1];
+            curr->x = v[j][0];
+            scanline = v[j][1];
+        } else {
+            curr->y_max = v[j][1];
+            curr->x = v[i][0];
+            scanline = v[i][1];	
+        }
 
-		all_edges[i]->next = NULL;
-	}
+        if( v[i][0] > v[j][0] ) {
+            curr->dx = v[i][0] - v[j][0];
+            curr->dy = v[i][1] - v[j][1];
+        } else {
+            curr->dx = v[j][0] - v[i][0];
+            curr->dy = v[j][1] - v[i][1];
+        }
+        curr->sum = 0;
+        curr->next = NULL;
+        if( NULL != glet[scanline] ) {
+            nBkt = glet[scanline];
+            while( NULL != nBkt->next) {
+                nBkt = nBkt->next;
+            }
 
-	//Find the starting scan line and top of the polygon
-	int start_scanline = WINDOW_HEIGHT;
-	int end_scanline = 0;
-	for (int i = 0; i < n; i++) {
-		if (all_edges[i]->miny < start_scanline) {
-			start_scanline = all_edges[i]->miny;
-		}
-		 
-		if (all_edges[i]->maxy > end_scanline) {
-			end_scanline = all_edges[i]->maxy;
-		}
-	}
+            if( 0 != curr-> dy ) {
+                nBkt->next = curr;
+            }
+        } else if( 0 != curr->dy ) {
+            glet[scanline] = curr;
+        }
+        if( 0 == curr->dy )  {
+            free(curr); 
+        }
+    }
+    Edge *bkt1, *bkt2;
+    for( int i = minScan; i <= maxScan; i++ ) { //iterate through scan lines, filling AEL
+        if( NULL != ael ) {
+            curr = ael;
+            nBkt = ael->next;
+            while( NULL != nBkt ) {
+                if(nBkt->y_max == i) {
+                    curr->next = nBkt->next;
+                    free(nBkt);
+                    nBkt = curr;
+                }
+                curr = nBkt;
+                nBkt = nBkt->next;
+            }
 
-	//Construct our Global Edge Table
-	Edge * glet [WINDOW_HEIGHT];
-	for (int i = start_scanline; i <= end_scanline; i++) {
-		for (int j = 0; j < n; j++) {
-			if ( (all_edges[j]->miny == i) ) { //&& (all_edges[j].slope != 0) ) {
-				if (NULL == &glet[i]) {
-					glet[i] = all_edges[j];
-				} else {
-					insertEdge(glet[i], all_edges[j]);
-				}
-			}
-		}
-	}
+            if( NULL != glet[i] ) {
+                curr->next = glet[i];
+            }
 
-	//Initialize the Active Edge Table	
-	Edge * aet;
-	int i = start_scanline;
-	aet = glet[i];
-	//Get along with the the algorithm
-	while (i <= end_scanline) {
-		fill(i, aet);
-		i++;
-		update(i,aet);
-		if (NULL != &glet[i]) {
-			insertEdge(aet, glet[i]);
-		}
-	}
-
-
-	//Make sure all memory is free.
-	for (int i = 0; i < WINDOW_HEIGHT; i++) {
-		if (&glet[i] != NULL) {
-			free(glet[i]);
-		}
-	}
-	for (int i = 0; i < n; i++) {
-		if (&all_edges[i] != NULL) {
-			free(all_edges[i]);
-		}
-	}
-
+            if( ael->y_max == i ) {
+                nBkt = ael;
+                ael = ael->next;
+                free(nBkt);
+            }
+        }
+            
+        if( NULL != ael ) {
+            ael = sortline(ael);
+            bkt1 = ael;
+            bkt2 = ael->next;
+            while( NULL != bkt1 && NULL != bkt2 ) {
+                glBegin(GL_POINTS);
+                for( GLint j = bkt1->x; j < bkt2->x; j++ ){
+                    glVertex2i(j,i);
+                }
+                glEnd();
+                bkt1 = update(bkt1);
+                bkt2 = update(bkt2);
+                bkt1 = bkt2->next;
+                if( NULL != bkt1 )  {
+                    bkt2 = bkt1->next;
+                }
+            }
+        } else if ( NULL != glet[i] ) {
+            ael = glet[i];
+        }
+    }
 }
+
 
