@@ -5,19 +5,28 @@
 #	include <GL/glut.h>
 #endif
 
-const static int WIDTH = 400;
-const static int HEIGHT = 300;
+const static int WIDTH = 800;
+const static int HEIGHT = 600;
+int window;
+int spin = 0;
+int animate = 1;
 
 /**
  * Cordinate all scene drawing.
+ * Args:
+ * 		none
  */
 static void display ( void )
 {
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	glLoadIdentity();
 
-	glColor3f(1.0,1.0,1.0);
-	glutSolidCube(1);
+	glColor4f(1.0,0.3,0.3,0.0);
+	glTranslatef(0.0,0.0,-20.0);
+	glPushMatrix();
+		glRotatef(spin,1.0,1.0,0.0);
+		glutSolidCube(1);
+	glPopMatrix();
 
 	glutSwapBuffers();
 }
@@ -35,6 +44,7 @@ static void keyboard ( unsigned char key, int x, int y )
 		case 'q':
 		case 'Q':
 		case 033:
+			glutDestroyWindow(window);
 			exit( EXIT_SUCCESS );
 			break;
 		case '1':
@@ -50,10 +60,8 @@ static void keyboard ( unsigned char key, int x, int y )
 			//Select camera position 2
 			glMatrixMode(GL_PROJECTION); // set the view volume shape
 			glLoadIdentity();
-			glOrtho(-2.0*64/48.0, 2.0*64/48.0, -2.0, 2.0, 0.1, 100);
+			gluPerspective(45.0f,(GLfloat)WIDTH/(GLfloat)HEIGHT,0.1f,100.0f);
 			glMatrixMode(GL_MODELVIEW); // position and aim the camera
-			glLoadIdentity();
-			gluLookAt(2.0, 2.0, 2.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 			break;
 		case '5':
 			//Toggle first light source
@@ -65,28 +73,64 @@ static void keyboard ( unsigned char key, int x, int y )
 			break;
 		case 'a':
 			//Toggle animation state
+			animate = (animate == 1) ? 0 : 1;
 			break;
 		default:
+			glutPostRedisplay();
 			break;
 	}
 }
 
 /**
- * 
+ * Description: Handle timer events
+ * Args:
+ * 		timernum - interger identifying which timer was called
  */
-static void init ( void )
+void timer(int timernum) 
 {
-	glClearColor ( 0.0, 0.0, 0.0, 0.0 );
-	glMatrixMode(GL_PROJECTION); // set the view volume shape
-  	glLoadIdentity();
-	glOrtho(-2.0*64/48.0, 2.0*64/48.0, -2.0, 2.0, 0.1, 100);
-	glMatrixMode(GL_MODELVIEW); // position and aim the camera
-	glLoadIdentity();
-	gluLookAt(2.0, 2.0, 2.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	if (0 == timernum ) {
+		if (animate == 1) {
+
+			spin++;
+			glutPostRedisplay();
+		}
+		glutTimerFunc(15,timer,0);
+	}
 }
 
 /**
- * Define our GL
+ * Description: Setup openGL viewport/lookat, enable lighting etc.  
+ * Args:
+ * 		none
+ */
+static void init ( void )
+{
+	glClearColor ( 0.0f, 0.0f, 0.0f, 0.0f );
+	glClearDepth( 1.0 );
+	glDepthFunc(GL_LESS);
+	glEnable(GL_DEPTH_TEST);
+	glShadeModel(GL_SMOOTH);
+
+	glMatrixMode(GL_PROJECTION); // set the view volume shape
+  	glLoadIdentity();
+	gluPerspective(45.0f,(GLfloat)WIDTH/(GLfloat)HEIGHT,0.1f,100.0f);
+	glMatrixMode(GL_MODELVIEW); // position and aim the camera
+
+	glEnable(GL_LIGHTING);
+	//glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE ) ;
+    glEnable ( GL_COLOR_MATERIAL ) ;
+
+	glEnable(GL_LIGHT0);
+	GLfloat light_pos[] = {3.0,3.0,3.0,0.0};
+	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+}
+
+
+/**
+ * Define our GLUT Window and callbacks
+ * Args:
+ * 		argc - number of args
+ *		argv - char pionter array to commanline args
  */
 int main ( int argc, char** argv ) 
 {
@@ -94,14 +138,11 @@ int main ( int argc, char** argv )
 	glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE );
 	glutInitWindowPosition( (glutGet(GLUT_SCREEN_WIDTH)/2)-(WIDTH/2), (glutGet(GLUT_SCREEN_HEIGHT)/2)-(HEIGHT/2));
 	glutInitWindowSize( WIDTH, HEIGHT );
-	glutCreateWindow( "Project #3" );
-
+	window = glutCreateWindow( "Project #3" );
 	init();
-
 	glutDisplayFunc( display );
+	glutTimerFunc(0,timer,0);
 	glutKeyboardFunc( keyboard );
-
 	glutMainLoop();
-
 	return( 0 );
 }
