@@ -12,6 +12,14 @@ int window;
 int spin = 0;
 int animate = 0;
 
+
+float m1color[] = { 0.0f, 1.0f, 0.0f, 1.0f};
+float m1diffuse[] = { 0.0f, 1.0f, 0.0f, 1.0f};
+float m1specular[] = { 1.0f, 1.0f, 1.0f, 1.0f};
+
+float m2color[] = { 1.0f, 0.0f, 0.0f, 1.0f};
+float m3color[] = { 1.0f, 0.0f, 0.0f, 1.0f};
+
 /**
  * Cordinate all scene drawing.
  * Args:
@@ -25,7 +33,11 @@ static void display ( void )
     glColor4f(1.0,0.3,0.3,0.0);
     glTranslatef(0.0,0.0,-30.0);
 
-    glColor3f(1.0,0.0,0.0);
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, m1color);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, m1specular);
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, m1color);
+	glMateriali(GL_FRONT, GL_SHININESS, 128);
+    glColor3f(0.8f,0.22f,0.3f);
     int radius = 10;
     for (int i = 0; i < 360; i=i+15) {
         float deginRad = i*(3.1459/180.0);
@@ -72,6 +84,7 @@ static void keyboard ( unsigned char key, int x, int y )
                 glLoadIdentity();
                 gluPerspective(45.0f,(GLfloat)WIDTH/(GLfloat)HEIGHT,0.1f,100.0f);
                 glMatrixMode(GL_MODELVIEW); // position and aim the camera
+                glutPostRedisplay();
                 break;
         case '2':
                 //Select camera position 1
@@ -81,23 +94,23 @@ static void keyboard ( unsigned char key, int x, int y )
                 glMatrixMode(GL_MODELVIEW); // position and aim the camera
                 glLoadIdentity();
                 gluLookAt(2.0, 2.0, 2.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+                glutPostRedisplay();
                 break;
         case '5':
                 //Toggle first light source
                 (glIsEnabled(GL_LIGHT0) == GL_TRUE ) ? glDisable(GL_LIGHT0) : glEnable(GL_LIGHT0);
+                glutPostRedisplay();
                 break;
         case '6':
                 //Toggle second light source
                 (glIsEnabled(GL_LIGHT1) == GL_TRUE) ? glDisable(GL_LIGHT1) : glEnable(GL_LIGHT1);
+                glutPostRedisplay();
                 break;
         case 'a':
                 //Toggle animation state
                 animate = (animate == 1) ? 0 : 1;
                 break;
-        default:
-                glutPostRedisplay();
-                break;
-    }
+	}
 }
 
 /**
@@ -135,11 +148,13 @@ static void init ( void )
     glMatrixMode(GL_MODELVIEW); // position and aim the camera
 
     glEnable(GL_LIGHTING);
-    //glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE ) ;
+    glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE ) ;
     glEnable ( GL_COLOR_MATERIAL ) ;
 
     GLfloat light_pos[] = {3.0,3.0,3.0,0.0};
+    GLfloat light_spec[] = {1.0,1.0,1.0,1.0};
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_spec);
 
     GLfloat light2_pos[] = {-3.0,-3.0,3.0,1.0};
     glLightfv(GL_LIGHT2, GL_POSITION, light2_pos);
