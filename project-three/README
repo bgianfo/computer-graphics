@@ -1,3 +1,82 @@
+Author: Brian Gianforcaro bjg1955@cs.rit.edu
+
+Camera Info:
+------------
+
+ #1) "Zoomed out" 90 degree field of view angle looking at 0,0,0.
+ Near clip 0.1 , far clip 100.0
+
+ #2) "Normal" 35 degree field of view angle looking at 0,0,0. 
+     Near clip 0.1 , far clip 100.0
+
+ #3) "Zoomed in" eye at 2,2,2  looking at 0,0,0 with a normal up vector (y)
+
+Lighting:
+---------
+ GL_LIGHT0) Position: x: 3.0 y: 3.0 z: 3.0    0.0
+			Specular: r: 1.0 g: 1.0 b: 1.0 a: 1.0
+
+ GL_LIGHT1) Position: x: -3.0 y: -3.0 z: 3.0    1.0
+	 		Specular: r: 1.0  g: 1.0  b: 1.0 a: 1.0
+
+Material:
+ 	- Material 1 for all sphere's is very shiny, non emissive, no ambient
+	  or diffuse. Everything ramped up for specular
+
+ 	- Material 2 for the Teapost is shiny, non emissive,
+	  ambient and diffuse in red spectrum.. Everything ramped up for specular 
+
+	- Material 3 for the Teapot stand, slightly emmisve in all colors.
+	  Ambient and diffuse with red. not very shiny. 
+
+	- Material 4 for the donought, very emmissive of red.
+	  No ambient or diffuse., Everything ramped for specular.
 
 
-Texture from :http://www.free-textures-tga.com/index.php?ct=metal&page=1
+Texture Map
+-----------
+	- Texture #1, a metal looking texture in TGA format used on Teapot only. 
+
+	- Texture #2, a grid looking texture in TGA format used on all the sphere's
+	  (large and small)
+
+Rotation:
+---------
+	- Teapot: the Teapot is rotating around it's Y axis
+
+	- All large sphere's: the collective is rotating  around the teapot on x and y and z
+
+	- Large Sphere's Individually: each large sphere is rotating on it's x and y axis.
+
+	- All small sphere's: the collective is rotating in the inverse direction around it's parent large
+	sphere on x and y and z.
+
+	- Small Sphere's: each small sphere is rotating on x and y
+
+Translation:
+------------
+	- Donought: The donought is being translated up and down by translating on
+	  the y axis. 
+
+Scaling:
+--------
+	- Donought: The donought is being scaled in the y direction corresponding
+	  wiht it's current y-axis value. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Textures from: http://www.free-textures-tga.com/
+Nate Miller's TGA Loader from:  http://www.cs.rit.edu/usr/local/pub/wrc/courses/cg1/textures/
