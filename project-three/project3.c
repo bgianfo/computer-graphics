@@ -1,5 +1,7 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
+#include "tga.h"
 #if defined(__APPLE__) && defined(__MACH__)
 #	include <GLUT/glut.h>
 #else
@@ -11,14 +13,20 @@ const static int HEIGHT = 600;
 int window;
 int spin = 0;
 int animate = 0;
-
+GLuint texture1;
 
 float m1color[] = { 0.0f, 1.0f, 0.0f, 1.0f};
 float m1diffuse[] = { 0.0f, 1.0f, 0.0f, 1.0f};
 float m1specular[] = { 1.0f, 1.0f, 1.0f, 1.0f};
 
 float m2color[] = { 1.0f, 0.0f, 0.0f, 1.0f};
+float m2diffuse[] = { 0.0f, 1.0f, 0.0f, 1.0f};
+float m2specular[] = { 1.0f, 1.0f, 1.0f, 1.0f};
+
 float m3color[] = { 1.0f, 0.0f, 0.0f, 1.0f};
+float m3diffuse[] = { 0.0f, 1.0f, 0.0f, 1.0f};
+float m3specular[] = { 1.0f, 1.0f, 1.0f, 1.0f};
+
 
 /**
  * Cordinate all scene drawing.
@@ -47,7 +55,10 @@ static void display ( void )
                 glTranslatef(cos(deginRad)*radius, sin(deginRad)*radius,0.0f);
                 glPushMatrix();
                     glRotatef(-(spin),1.0,1.0,0.0);
+					glEnable(GL_TEXTURE_2D);
+					glBindTexture(GL_TEXTURE_2D, texture1);
                     glutSolidCube(1);
+					glDisable(GL_TEXTURE_2D);
                 glPopMatrix();
             glPopMatrix();
         glPopMatrix();
@@ -57,7 +68,12 @@ static void display ( void )
     glColor3f(0.2,0.2,0.8);
     glPushMatrix();
         glRotatef(spin,1.0,1.0,0.0);
-        glutSolidIcosahedron();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+        //glutSolidIcosahedron();
+		glutSolidTeapot(4);
+		glDisable(GL_TEXTURE_2D);
+
     glPopMatrix();
     glutSwapBuffers();
 }
@@ -116,7 +132,7 @@ static void keyboard ( unsigned char key, int x, int y )
 /**
  * Description: Handle timer events
  * Args:
- * 		timernum - interger identifying which timer was called
+ * 		timernum - integer identifying which timer was called
  */
 void timer(int timernum) 
 {
@@ -158,6 +174,16 @@ static void init ( void )
 
     GLfloat light2_pos[] = {-3.0,-3.0,3.0,1.0};
     glLightfv(GL_LIGHT2, GL_POSITION, light2_pos);
+
+	glGenTextures( 1, &texture1 );
+
+	glBindTexture( GL_TEXTURE_2D, texture1 );
+	if (loadTGA("metal.tga", texture1)) {
+		printf("Texture \"metal.tga\" successfully loaded\n");
+	} else {
+		printf("Texture \"metal.tga\" failed to load\n");
+	}
+
 }
 
 

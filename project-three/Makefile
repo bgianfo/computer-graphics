@@ -9,7 +9,7 @@ OUT = project3
 default: project3
 
 project3: project3.c
-	$(CC) project3.c -o $(OUT) $(CFLAGS) $(LDFLAGS)
+	$(CC) tga.c project3.c -o $(OUT) $(CFLAGS) $(LDFLAGS)
 
 run: default
 	./$(OUT)
