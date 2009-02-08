@@ -12,8 +12,12 @@ const static int WIDTH = 800;
 const static int HEIGHT = 600;
 int window;
 int spin = 0;
+float movementy = 0;
+int direction = 1;
 int animate = 0;
+
 GLuint texture1;
+GLuint texture2;
 
 float m1color[] = { 0.0f, 1.0f, 0.0f, 1.0f};
 float m1diffuse[] = { 0.0f, 1.0f, 0.0f, 1.0f};
@@ -47,6 +51,8 @@ static void display ( void )
 	glMateriali(GL_FRONT, GL_SHININESS, 128);
     glColor3f(0.8f,0.22f,0.3f);
     int radius = 10;
+	GLUquadric *quad = gluNewQuadric();
+	gluQuadricTexture(quad, GL_TRUE);
     for (int i = 0; i < 360; i=i+15) {
         float deginRad = i*(3.1459/180.0);
         glPushMatrix();
@@ -56,8 +62,8 @@ static void display ( void )
                 glPushMatrix();
                     glRotatef(-(spin),1.0,1.0,0.0);
 					glEnable(GL_TEXTURE_2D);
-					glBindTexture(GL_TEXTURE_2D, texture1);
-                    glutSolidCube(1);
+					glBindTexture(GL_TEXTURE_2D, texture2);
+					gluSphere(quad,1,20,20);
 					glDisable(GL_TEXTURE_2D);
                 glPopMatrix();
             glPopMatrix();
@@ -70,11 +76,20 @@ static void display ( void )
         glRotatef(spin,1.0,1.0,0.0);
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texture1);
-        //glutSolidIcosahedron();
-		glutSolidTeapot(4);
+		glutSolidTeapot(3);
 		glDisable(GL_TEXTURE_2D);
 
     glPopMatrix();
+
+	glPushMatrix();
+		//glTranslatef(0.0,-3.0,0.0);
+		glTranslatef(0.0,movementy,0.0);
+		glPushMatrix();
+			glRotatef(90,1.0,0.0,0.0);
+			glutSolidTorus(.5,14,50,50);
+		glPopMatrix();
+	glPopMatrix();
+
     glutSwapBuffers();
 }
 
@@ -91,6 +106,8 @@ static void keyboard ( unsigned char key, int x, int y )
         case 'q':
         case 'Q':
         case 033:
+				glDeleteTextures(1,&texture1);
+				glDeleteTextures(1,&texture2);
                 glutDestroyWindow(window);
                 exit( EXIT_SUCCESS );
                 break;
@@ -139,8 +156,17 @@ void timer(int timernum)
     if (0 == timernum ) {
         if (animate == 1) {
             spin++;
-            glutPostRedisplay();
+			if (abs(movementy) >= 10 ) {
+				if (direction == 1) {
+					direction = 0;
+				} else {
+					direction = 1;
+				}
+			}
+			movementy = (direction == 0) ? movementy+.1:movementy-.1;
+			glutPostRedisplay();
         }
+
         glutTimerFunc(15,timer,0);
     }
 }
@@ -176,9 +202,18 @@ static void init ( void )
     glLightfv(GL_LIGHT2, GL_POSITION, light2_pos);
 
 	glGenTextures( 1, &texture1 );
+	glGenTextures( 1, &texture2 );
 
 	glBindTexture( GL_TEXTURE_2D, texture1 );
 	if (loadTGA("metal.tga", texture1)) {
+		printf("Texture \"weird.tga\" successfully loaded\n");
+	} else {
+		printf("Texture \"weird.tga\" failed to load\n");
+	}
+
+
+	glBindTexture( GL_TEXTURE_2D, texture2 );
+	if (loadTGA("grid.tga", texture2)) {
 		printf("Texture \"metal.tga\" successfully loaded\n");
 	} else {
 		printf("Texture \"metal.tga\" failed to load\n");
