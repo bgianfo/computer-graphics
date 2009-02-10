@@ -1,0 +1,29 @@
+#
+# LIBDIR is the directory where the FLTK libraries are located
+# INCDIR is the directory where the FLTK include files are located
+#
+# These are probably either /usr/local/lib and /usr/local/include, or
+# /opt/local/lib and /opt/local/include, depending on where you have
+# installed FLTK.
+#
+LIBDIR = /usr/local/lib
+INCDIR = /usr/local/include
+
+#
+# You shouldn't have to modify anything below this point
+#
+CC = g++
+
+CFLAGS = -D__APPLE__ -I$(INCDIR)
+
+LDLIBS = -L$(LIBDIR) -framework Carbon -framework ApplicationServices -lsupc++
+GLDLIBS = -framework AGL -framework OpenGL
+
+LDFLAGS  = $(LDLIBS) $(GLDLIBS) -lfltk_gl -lfltk -lm
+
+tess: 
+	$(CC) $(CFLAGS) $(LDFLAGS) -o tess *.cpp
+
+clean: 
+	rm *.o tess
+
