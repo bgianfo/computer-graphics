@@ -172,6 +172,7 @@ Cylinder::Cylinder(int n, int m) : Shape() {
 
 Sphere::Sphere(int n) : Shape() {
 #define T(a,b,c) addTriangle(a,b,c);
+#define S(num,a,b,c) Sphere(num,a,b,c);
 	// Your code for tessellating a sphere goes here
 	if (n > 5) 
 		n = 5;
@@ -189,18 +190,17 @@ Sphere::Sphere(int n) : Shape() {
    v10.x =-A; v10.y=-R;v10.z = 0;   v11.x = A;v11.y =-R;v11.z = 0;
 
 
-    T(v0,v1,v2);  T(v3,v2,v1);
-    T(v3,v4,v5);  T(v3,v5,v6);
-    T(v0,v7,v8);  T(v0,v8,v9);
-    T(v5,v10,v11);T(v8,v11,v10);
-    T(v1,v9,v4);  T(v10,v4,v9);
-    T(v2,v6,v7);  T(v11,v7,v6);
-    T(v3,v1,v4);  T(v3,v6,v2);
-    T(v0,v9,v1);  T(v0,v2,v7);
-    T(v8,v10,v9); T(v8,v7,v11);
-    T(v5,v4,v10); T(v5,v11,v6);
+    S(n,v0,v1,v2);  S(n,v3,v2,v1);
+    S(n,v3,v4,v5);  S(n,v3,v5,v6);
+    S(n,v0,v7,v8);  S(n,v0,v8,v9);
+    S(n,v5,v10,v11);S(n,v8,v11,v10);
+    S(n,v1,v9,v4);  S(n,v10,v4,v9);
+    S(n,v2,v6,v7);  S(n,v11,v7,v6);
+    S(n,v3,v1,v4);  S(n,v3,v6,v2);
+    S(n,v0,v9,v1);  S(n,v0,v2,v7);
+    S(n,v8,v10,v9); S(n,v8,v7,v11);
+    S(n,v5,v4,v10); S(n,v5,v11,v6);
 
-#undef T
 	// Note:
 	// If you decide to solve this problem by recursively subdividing
 	// a regular platonic solid, you may use the geometric
@@ -213,6 +213,75 @@ Sphere::Sphere(int n) : Shape() {
 
 }
 
-Sphere::Sphere(int n, const Point3 &p1, const Point3 &p2, const Point3 &p3) :Shape() {
+Sphere::Sphere(int n, const Point3 p1, const Point3 p2, const Point3 p3) :Shape() {
 
+	cout << "Current n:"<< n << endl;
+	if (n <= 1) {
+		T(p1,p2,p3);
+	} else {
+		Point3 a; Point3 b; Point3 c;
+		double weight;
+
+		/*
+		double minx; double maxx;
+		if (p1.x > p2.x) {
+			minx = p2.x;
+			maxx = p1.x;
+		} else {
+			maxx = p2.x;
+			minx = p1.x;
+		}
+
+		double miny; double maxy;
+		if (p1.y > p2.y) {
+			miny = p2.y;
+			maxy = p1.y;
+		} else {
+			maxy = p2.y;
+			miny = p1.y;
+		}
+		*/
+		a.x = (p1.x + p2.x)/2;
+		a.y = (p1.y + p2.y)/2;
+		a.z = (p1.z + p2.z)/2;
+		/*
+		weight = sqrt((a.x*a.x) + (a.y*a.y) + (a.z*a.z));
+		a.x = a.x/weight;
+		a.y = a.y/weight;
+		a.z = a.z/weight;
+		*/
+
+		b.x = (p1.x + p3.x)/2;
+		b.y = (p1.y + p3.y)/2;
+		b.z = (p1.z + p3.z)/2;
+		/*
+		weight = sqrt((b.x*b.x) + (b.y*b.y) + (b.z*b.z));
+		b.x = b.x/weight;
+		b.y = b.y/weight;
+		b.z = b.z/weight;
+		*/
+
+		c.x = (p2.x + p3.x)/2;
+		c.y = (p2.y + p3.y)/2;
+		c.z = (p2.z + p3.z)/2;
+		/*
+		weight = sqrt((c.x*c.x) + (c.y*c.y) + (c.z*c.z));
+		c.x = c.x/weight;
+		c.y = c.y/weight;
+		c.z = c.z/weight;
+		*/
+
+
+		Sphere(n-1,p1,a,b);
+		Sphere(n-1,b,a,c);
+		Sphere(n-1,a,p2,c);
+		Sphere(n-1,b,c,p3);
+	}
 }
+#undef T
+#undef S
+
+
+
+
+

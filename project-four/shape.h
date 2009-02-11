@@ -44,7 +44,7 @@ public:
 class Sphere : public Shape {
 public:
   Sphere(int);
-  Sphere(int, const Point3 &p1, const Point3 &p2, const Point3 &p3);
+  Sphere(int, const Point3 p1, const Point3 p2, const Point3 p3);
 };
 
 #endif
