@@ -34,8 +34,7 @@ void Shape::addTriangle(const Point3 &p1, const Point3 &p2, const Point3 &p3) {
 Cube::Cube(int n) : Shape() {
     const float DIM = 0.5;
     const float R = (2*DIM)/n;
-
-    for (int face = 0; face < 7; face++) {
+    for (int face = 0; face < 6; face++) {
         float xval = -(DIM);
         for (int i = 0; i < n; i++) {
             float yval = DIM;
@@ -43,56 +42,44 @@ Cube::Cube(int n) : Shape() {
                 Point3 p1; Point3 p2; Point3 p3; Point3 p4;
                 switch (face) {
                     case 0: //FRONT
-                        p1.x = xval;   p1.y = yval;   p1.z = DIM;
-                        p2.x = xval;   p2.y = yval-R; p2.z = DIM;
-                        p3.x = xval+R; p3.y = yval;   p3.z = DIM;
-                        p4.x = xval+R; p4.y = yval-R; p4.z = DIM;
-                        addTriangle(p1,p2,p3);
-                        addTriangle(p4,p3,p2);
+                        p3.x = xval;   p3.y = yval;   p3.z = DIM;
+                        p1.x = xval;   p1.y = yval-R; p1.z = DIM;
+                        p4.x = xval+R; p4.y = yval;   p4.z = DIM;
+                        p2.x = xval+R; p2.y = yval-R; p2.z = DIM;
                         break;
                     case 1: //BACK
-                        p3.x = xval;   p3.y = yval;   p3.z = -DIM;
-                        p4.x = xval;   p4.y = yval-R; p4.z = -DIM;
-                        p1.x = xval+R; p1.y = yval;   p1.z = -DIM;
-                        p2.x = xval+R; p2.y = yval-R; p2.z = -DIM;
-                        addTriangle(p1,p2,p3);
-                        addTriangle(p4,p3,p2);
+                        p4.x = xval;   p4.y = yval;   p4.z = -DIM;
+                        p2.x = xval;   p2.y = yval-R; p2.z = -DIM;
+                        p3.x = xval+R; p3.y = yval;   p3.z = -DIM;
+                        p1.x = xval+R; p1.y = yval-R; p1.z = -DIM;
                         break;
                     case 2: //LEFT
-                        p1.x = -DIM; p1.y = yval;   p1.z = xval;
-                        p2.x = -DIM; p2.y = yval-R; p2.z = xval;
-                        p3.x = -DIM; p3.y = yval;   p3.z = xval+R;
-                        p4.x = -DIM; p4.y = yval-R; p4.z = xval+R;
-                        addTriangle(p4,p3,p1);
-                        addTriangle(p4,p1,p2);
+                        p1.x = -DIM;   p1.y = yval;   p1.z = xval;
+                        p2.x = -DIM;   p2.y = yval-R; p2.z = xval;
+                        p3.x = -DIM;   p3.y = yval;   p3.z = xval+R;
+                        p4.x = -DIM;   p4.y = yval-R; p4.z = xval+R;
                         break;
                     case 3: //RIGHT
-                        p3.x = DIM; p3.y = yval;   p3.z = xval;
-                        p4.x = DIM; p4.y = yval-R; p4.z = xval;
-                        p1.x = DIM; p1.y = yval;   p1.z = xval+R;
-                        p2.x = DIM; p2.y = yval-R; p2.z = xval+R;
-                        addTriangle(p4,p3,p1);
-                        addTriangle(p4,p1,p2);
+                        p3.x = DIM;    p3.y = yval;   p3.z = xval;
+                        p4.x = DIM;    p4.y = yval-R; p4.z = xval;
+                        p1.x = DIM;    p1.y = yval;   p1.z = xval+R;
+                        p2.x = DIM;    p2.y = yval-R; p2.z = xval+R;
                         break;
                     case 4: //TOP
-                        p3.x = xval;   p3.y = DIM/*yval*/;   p3.z = yval;
-                        p4.x = xval;   p4.y = DIM/*yval-R*/; p4.z = yval-R;
-                        p1.x = xval+R; p1.y = DIM/*yval*/;   p1.z = yval;
-                        p2.x = xval+R; p2.y = DIM/*yval-R*/; p2.z = yval-R;
-                        addTriangle(p4,p3,p1);
-                        addTriangle(p4,p1,p2);
-
+                        p3.x = xval;   p3.y = DIM;    p3.z = yval;
+                        p4.x = xval;   p4.y = DIM;    p4.z = yval-R;
+                        p1.x = xval+R; p1.y = DIM;    p1.z = yval;
+                        p2.x = xval+R; p2.y = DIM;    p2.z = yval-R;
                         break;
                     case 5: //BOTTOM
-                        p1.x = xval;   p1.y = -DIM/*yval*/;   p1.z = yval;
-                        p2.x = xval;   p2.y = -DIM/*yval-R*/; p2.z = yval-R;
-                        p3.x = xval+R; p3.y = -DIM/*yval*/;   p3.z = yval;
-                        p4.x = xval+R; p4.y = -DIM/*yval-R*/; p4.z = yval-R;
-                        addTriangle(p4,p3,p1);
-                        addTriangle(p4,p1,p2);
+                        p1.x = xval;   p1.y = -DIM;   p1.z = yval;
+                        p2.x = xval;   p2.y = -DIM;   p2.z = yval-R;
+                        p3.x = xval+R; p3.y = -DIM;   p3.z = yval;
+                        p4.x = xval+R; p4.y = -DIM;   p4.z = yval-R;
                         break;
-
                 }
+                addTriangle(p4,p3,p1);
+                addTriangle(p4,p1,p2);
                 yval -= R; 
             }
             xval += R;
