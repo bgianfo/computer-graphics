@@ -29,7 +29,7 @@ void about_callback(Fl_Widget*, void* data) {
   { Fl_Box* o = new Fl_Box(10, 10, 165, 25, "Computer Graphics 1 - Shape Tesselation");
     o->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
   }
-  { Fl_Box* o = new Fl_Box(10, 40, 165, 25, "Student Name: XXX");
+  { Fl_Box* o = new Fl_Box(10, 40, 165, 25, "Student Name: Brian Gianforcaro");
     o->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
   }
   { Fl_Button* o = new Fl_Button(190, 65, 90, 25, "OK");
