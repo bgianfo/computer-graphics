@@ -34,13 +34,13 @@ void Shape::addTriangle(const Point3 &p1, const Point3 &p2, const Point3 &p3) {
 Cube::Cube(int n) : Shape() {
     const float DIM = 0.5;
     const float R = (2*DIM)/n;
-    for (int face = 0; face < 6; face++) {
+    for ( int face = 0; face < 6; face++ ) {
         float xval = -(DIM);
-        for (int i = 0; i < n; i++) {
+        for ( int i = 0; i < n; i++ ) {
             float yval = DIM;
-            for (int j = 0; j < n; j++) {
+            for ( int j = 0; j < n; j++ ) {
                 Point3 p1; Point3 p2; Point3 p3; Point3 p4;
-                switch (face) {
+                switch ( face ) {
                     case 0: //FRONT
                         p3.x = xval;   p3.y = yval;   p3.z = DIM;
                         p1.x = xval;   p1.y = yval-R; p1.z = DIM;
@@ -90,8 +90,11 @@ Cube::Cube(int n) : Shape() {
 Cone::Cone(int n, int m) : Shape() {
 	if( n < 3 )
 		n = 3;
-
+	const static float MINY = -0.5;	
+	const static float MAXY = 0.5;	
+	const static float RAD = 0.5;
 	// Your code for tessellating a cone goes here
+
 
 }
 
@@ -100,7 +103,36 @@ Cylinder::Cylinder(int n, int m) : Shape() {
 		n = 3;
 
 	// Your code for tessellating a cylinder goes here
-
+	const static float MINY = -0.5;	
+	const static float MAXY = 0.5;	
+	const static float RAD = 0.5;
+	
+	const float YINC = (2*MAXY)/m;
+	for ( int i = 0; i < 360; i += 360/n ) {
+		Point3 a; Point3 b; Point3 c; Point3 d; 
+		float degl = i*(PI/180);
+		float degr = (i+(360/n))*(PI/180);
+	    a.x = cos(degl)*RAD; a.z = sin(degl)*RAD; a.y = MAXY;
+	    b.x = cos(degr)*RAD; b.z = sin(degr)*RAD; b.y = MAXY;
+		c.x = 0; c.z = 0; c.y = MAXY;
+		addTriangle(c,b,a);
+	
+		c.x = a.x; c.z = a.z;
+		d.x = b.x; d.z = b.z;
+		float yval = MAXY;
+		for (int j = 0; j < m; j++) {
+			a.y = yval;
+			b.y = yval;
+			c.y = yval- YINC;	
+			d.y = yval- YINC;	
+			addTriangle(a,b,c);
+			addTriangle(c,b,d);
+			yval -= YINC;
+		}
+		c.x = 0; c.z = 0; c.y = MINY;
+		a.y = MINY; b.y = MINY;
+		addTriangle(a,b,c);
+	}
 }
 
 Sphere::Sphere(int n) : Shape() {
