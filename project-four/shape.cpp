@@ -94,8 +94,8 @@ Cone::Cone(int n, int m) : Shape() {
 	const static double MINY = -0.5;	
 	const static double MAXY = 0.5;	
 	const static double RAD = 0.5;
-	const static double RADDEC = RAD/(double)m;
-	const static double YINC = (2*MAXY)/(double)m;
+	double RADDEC = RAD/(double)m;
+	double YINC = 2*(MAXY/(double)m);
 
 	for ( double i = 0; i < 360; i += 360/(double)n ) {
 		Point3 a; Point3 b; Point3 c; Point3 d; 
@@ -108,24 +108,24 @@ Cone::Cone(int n, int m) : Shape() {
 		addTriangle(a,b,c);
 	
 		double yval = MINY;
-		double rad = RAD;
-		for (int j = 0; j < m; j++) {
-			cout << "Pass #"<<j << endl;
-			cout << "Current rad:"<< rad << endl;
-			cout << "Current yval:" << yval << endl;
+		c.y = yval; d.y = yval;
+		double r = RAD;
+		for (int j = 1; j < m; j++) {
 			a.y = yval;
 			b.y = yval;
-			rad -= RADDEC;
-			c.x = cos(degl)*rad; c.z = sin(degl)*rad; c.y = yval+ YINC;
-	    	d.x = cos(degr)*rad; d.z = sin(degr)*rad; d.y = yval+ YINC;
+			r = r - RADDEC;
 
-			addTriangle(c,b,a);
-			addTriangle(d,b,c);
+			c.x = cos(degl)*r; c.z = sin(degl)*r; c.y += YINC;
+	    	d.x = cos(degr)*r; d.z = sin(degr)*r; d.y += YINC;
+
+			addTriangle(d,b,a);
+			addTriangle(c,d,a);
 
 			a.x = c.x; a.z = c.z;
 			b.x = d.x; b.z = d.z;
 			yval += YINC;
 		}
+
 		a.y = yval;
 		b.y = yval;
 		c.x = 0; c.z = 0; c.y = MAXY;
@@ -142,11 +142,11 @@ Cylinder::Cylinder(int n, int m) : Shape() {
 	const static float MAXY = 0.5;	
 	const static float RAD = 0.5;
 	
-	const float YINC = (2*MAXY)/m;
+	const double YINC = (2*MAXY)/m;
 	for ( int i = 0; i < 360; i += 360/n ) {
 		Point3 a; Point3 b; Point3 c; Point3 d; 
-		float degl = i*(PI/180);
-		float degr = (i+(360/n))*(PI/180);
+		double degl = i*(PI/180);
+		double degr = (i+(360/n))*(PI/180);
 	    a.x = cos(degl)*RAD; a.z = sin(degl)*RAD; a.y = MAXY;
 	    b.x = cos(degr)*RAD; b.z = sin(degr)*RAD; b.y = MAXY;
 		c.x = 0; c.z = 0; c.y = MAXY;
@@ -154,7 +154,7 @@ Cylinder::Cylinder(int n, int m) : Shape() {
 	
 		c.x = a.x; c.z = a.z;
 		d.x = b.x; d.z = b.z;
-		float yval = MAXY;
+		double yval = MAXY;
 		for (int j = 0; j < m; j++) {
 			a.y = yval;
 			b.y = yval;
