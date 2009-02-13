@@ -44,7 +44,8 @@ public:
 class Sphere : public Shape {
 public:
   Sphere(int);
-  Sphere(int, const Point3 p1, const Point3 p2, const Point3 p3);
+protected:
+  void sub(int, Point3 p1, Point3 p2, Point3 p3);
 };
 
 #endif
