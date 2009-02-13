@@ -102,8 +102,8 @@ Cone::Cone(int n, int m) : Shape() {
         double degl = i*(PI/180);
         double degr = (i+(360/(double)n))*(PI/180);
 
-        a.x = cos(degl)*RAD; a.z = sin(degl)*RAD; a.y = MINY;
-        b.x = cos(degr)*RAD; b.z = sin(degr)*RAD; b.y = MINY;
+        a.x = std::cos(degl)*RAD; a.z = std::sin(degl)*RAD; a.y = MINY;
+        b.x = std::cos(degr)*RAD; b.z = std::sin(degr)*RAD; b.y = MINY;
         c.x = 0; c.z = 0; c.y = MINY;
         addTriangle(a,b,c);
 
@@ -174,8 +174,8 @@ Sphere::Sphere(int n) : Shape() {
     if (n > 8)  {
         n = 8;
     }
-    const static double A = 2/(1+sqrt(5));
     const static double R = 1;
+    const static double A = 2/(1+std::sqrt(5.0f));
 
     Point3 v0;Point3 v1;Point3 v2;Point3 v3;Point3 v4; Point3 v5;
     Point3 v6;Point3 v7;Point3 v8;Point3 v9;Point3 v10;Point3 v11;
@@ -184,7 +184,7 @@ Sphere::Sphere(int n) : Shape() {
     v4.x =-R; v4.y = 0; v4.z = A;    v5.x = 0; v5.y =-A; v5.z = R;
     v6.x = R; v6.y = 0; v6.z = A;    v7.x = R; v7.y = 0; v7.z =-A;
     v8.x = 0; v8.y =-A; v8.z =-R;    v9.x =-R; v9.y = 0; v9.z =-A;
-    v10.x =-A; v10.y=-R;v10.z = 0;   v11.x = A;v11.y =-R;v11.z = 0;
+    v10.x =-A;v10.y=-R;v10.z = 0;    v11.x = A;v11.y =-R;v11.z = 0;
 
 
     sub(n,v0,v1,v2);  sub(n,v3,v2,v1);
@@ -207,6 +207,9 @@ void Sphere::sub(int n, Point3 p1, Point3 p2, Point3 p3) {
         pv1.normalize();
         pv2.normalize();
         pv3.normalize();
+	pv1 *= .5;
+	pv2 *= .5;
+	pv3 *= .5;
         p1.x = pv1.x; p1.y = pv1.y; p1.z = pv1.z;
         p2.x = pv2.x; p2.y = pv2.y; p2.z = pv2.z;
         p3.x = pv3.x; p3.y = pv3.y; p3.z = pv3.z;
