@@ -66,6 +66,7 @@ void display( void ) {
 	cout << "Green Polygon" << endl;
 
 	vector<vector<int> > v2;
+	vtx.clear();
 	vtx.push_back(80);
 	vtx.push_back(70);
 	v2.push_back(vtx);
@@ -100,6 +101,7 @@ void display( void ) {
 	cout << "Black Polygon" << endl;
 
 	vector<vector<int> > v3;
+	vtx.clear();
 	vtx.push_back(80);
 	vtx.push_back(150);
 	v3.push_back(vtx);

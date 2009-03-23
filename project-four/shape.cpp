@@ -89,34 +89,32 @@ Cube::Cube(int n) : Shape() {
 
 Cone::Cone(int n, int m) : Shape() {
     if( n < 3 )
-            n = 3;
+		n = 3;
     // Your code for tessellating a cone goes here
-    const static double MINY = -0.5;	
     const static double MAXY = 0.5;	
     const static double RAD = 0.5;
-    double RADDEC = RAD/(double)m;
-    double YINC = 2*(MAXY/(double)m);
+    double YINC = 2.0*(MAXY/(double)m);
 
     for ( double i = 0; i < 360; i += 360/(double)n ) {
         Point3 a; Point3 b; Point3 c; Point3 d; 
-        double degl = i*(PI/180);
-        double degr = (i+(360/(double)n))*(PI/180);
+        double dl = i*(PI/180.0);
+        double dr = (i+(360.0/(double)n))*(PI/180.0);
 
-        a.x = std::cos(degl)*RAD; a.z = std::sin(degl)*RAD; a.y = MINY;
-        b.x = std::cos(degr)*RAD; b.z = std::sin(degr)*RAD; b.y = MINY;
-        c.x = 0; c.z = 0; c.y = MINY;
+        a.x = std::cos(dl)*RAD; a.z = std::sin(dl)*RAD; a.y = -MAXY;
+        b.x = std::cos(dr)*RAD; b.z = std::sin(dr)*RAD; b.y = -MAXY;
+        c.x = 0; c.z = 0; c.y = -MAXY;
         addTriangle(a,b,c);
 
-        double yval = MINY;
+        double yval = -MAXY;
         c.y = yval; d.y = yval;
         double r = RAD;
-        for (int j = 1; j < m; j++) {
+        for ( int j = 1; j < m; j++ ) {
             a.y = yval;
             b.y = yval;
-            r = r - RADDEC;
+            r = r - RAD/(double)m;
 
-            c.x = cos(degl)*r; c.z = sin(degl)*r; c.y += YINC;
-            d.x = cos(degr)*r; d.z = sin(degr)*r; d.y += YINC;
+            c.x = cos(dl)*r; c.z = sin(dl)*r; c.y += YINC;
+            d.x = cos(dr)*r; d.z = sin(dr)*r; d.y += YINC;
 
             addTriangle(d,b,a);
             addTriangle(c,d,a);
@@ -125,7 +123,6 @@ Cone::Cone(int n, int m) : Shape() {
             b.x = d.x; b.z = d.z;
             yval += YINC;
         }
-
         a.y = yval;
         b.y = yval;
         c.x = 0; c.z = 0; c.y = MAXY;
@@ -135,14 +132,13 @@ Cone::Cone(int n, int m) : Shape() {
 
 Cylinder::Cylinder(int n, int m) : Shape() {
     if( n < 3 )
-            n = 3;
+		n = 3;
 
     // Your code for tessellating a cylinder goes here
     const static double MINY = -0.5;	
-    const static double MAXY = 0.5;	
     const static double RAD = 0.5;
-    
     const double YINC = (2*MAXY)/m;
+	
     for ( int i = 0; i < 360; i += 360/n ) {
         Point3 a; Point3 b; Point3 c; Point3 d; 
         double degl = i*(PI/180);
@@ -155,7 +151,7 @@ Cylinder::Cylinder(int n, int m) : Shape() {
         c.x = a.x; c.z = a.z;
         d.x = b.x; d.z = b.z;
         double yval = MAXY;
-        for (int j = 0; j < m; j++) {
+        for ( int j = 0; j < m; j++ ) {
             a.y = yval;
             b.y = yval;
             c.y = yval- YINC;	
@@ -164,16 +160,18 @@ Cylinder::Cylinder(int n, int m) : Shape() {
             addTriangle(c,b,d);
             yval -= YINC;
         }
-        c.x = 0; c.z = 0; c.y = MINY;
-        a.y = MINY; b.y = MINY;
+        c.x = 0; c.z = 0; c.y = -MAXY;
+        a.y = -MAXY; b.y = -MAXY;
         addTriangle(a,b,c);
     }
 }
 
 Sphere::Sphere(int n) : Shape() {
+	/*
     if (n > 8)  {
         n = 8;
     }
+	*/
     const static double R = 1;
     const static double A = 2/(1+std::sqrt(5.0f));
 
@@ -187,16 +185,16 @@ Sphere::Sphere(int n) : Shape() {
     v10.x =-A;v10.y=-R;v10.z = 0;    v11.x = A;v11.y =-R;v11.z = 0;
 
 
-    sub(n,v0,v1,v2);  sub(n,v3,v2,v1);
-    sub(n,v3,v4,v5);  sub(n,v3,v5,v6);
-    sub(n,v0,v7,v8);  sub(n,v0,v8,v9);
-    sub(n,v5,v10,v11);sub(n,v8,v11,v10);
-    sub(n,v1,v9,v4);  sub(n,v10,v4,v9);
-    sub(n,v2,v6,v7);  sub(n,v11,v7,v6);
-    sub(n,v3,v1,v4);  sub(n,v3,v6,v2);
-    sub(n,v0,v9,v1);  sub(n,v0,v2,v7);
-    sub(n,v8,v10,v9); sub(n,v8,v7,v11);
-    sub(n,v5,v4,v10); sub(n,v5,v11,v6);
+    sub(n,v0,v1,v2);   sub(n,v3,v2,v1);
+    sub(n,v3,v4,v5);   sub(n,v3,v5,v6);
+    sub(n,v0,v7,v8);   sub(n,v0,v8,v9);
+    sub(n,v5,v10,v11); sub(n,v8,v11,v10);
+    sub(n,v1,v9,v4);   sub(n,v10,v4,v9);
+    sub(n,v2,v6,v7);   sub(n,v11,v7,v6);
+    sub(n,v3,v1,v4);   sub(n,v3,v6,v2);
+    sub(n,v0,v9,v1);   sub(n,v0,v2,v7);
+    sub(n,v8,v10,v9);  sub(n,v8,v7,v11);
+    sub(n,v5,v4,v10);  sub(n,v5,v11,v6);
 }
 
 void Sphere::sub(int n, Point3 p1, Point3 p2, Point3 p3) {
@@ -207,14 +205,13 @@ void Sphere::sub(int n, Point3 p1, Point3 p2, Point3 p3) {
         pv1.normalize();
         pv2.normalize();
         pv3.normalize();
-	pv1 *= .5;
-	pv2 *= .5;
-	pv3 *= .5;
+		pv1 *= 0.5;
+		pv2 *= 0.5;
+		pv3 *= 0.5;
         p1.x = pv1.x; p1.y = pv1.y; p1.z = pv1.z;
         p2.x = pv2.x; p2.y = pv2.y; p2.z = pv2.z;
         p3.x = pv3.x; p3.y = pv3.y; p3.z = pv3.z;
         addTriangle(p1,p2,p3);
-        return;
     } else {
         Vector3 av = pv1+pv2; 
         Vector3 bv = pv2+pv3; 

@@ -27,6 +27,10 @@
 #include <vector>
   using std::vector;
 
+#include <algorithm>
+  using std::min;
+  using std::max;
+  using std::swap;
 /*   
  *  We take all the the vertices of our polygon and build a global edge table
  *  (GLET). This holds a row for every row pixels in our polygon. 
@@ -100,21 +104,15 @@
 
 void SkPolygonFill(const vector<vector<int> > bounds )
 {
-  unsigned short int minScan = bounds.front()[VERT_Y];
-  unsigned short int maxScan = bounds.front()[VERT_Y];
+  int minScan = bounds.front()[VERT_Y];
+  int maxScan = bounds.front()[VERT_Y];
 
   // Find min/max  scan lines for our polygon
-  for( unsigned short int i = 0; i < bounds.size(); i++ )
+  for( unsigned int i = 0; i < bounds.size(); i++ )
   {
-    if( bounds[i][VERT_Y] > maxScan )
-    {
-      maxScan = bounds[i][VERT_Y];
-    }
+    maxScan = max( bounds[i][VERT_Y], maxScan );
 
-    if( bounds[i][VERT_Y] < minScan )
-    {
-      minScan = bounds[i][VERT_Y];
-    }
+    minScan = min( bounds[i][VERT_Y], minScan );
   }
 
   // Initialize lLobal Edge Table to max possible size
@@ -122,7 +120,7 @@ void SkPolygonFill(const vector<vector<int> > bounds )
   //globalEdgeTable.resize(maxScan);
 
   // Intialize all scan lines to NULL
-  for( unsigned short int i = 0; i <= maxScan; i++ )
+  for( int i = 0; i <= maxScan; i++ )
   {
     PolyEdge *tmp = NULL;
     globalEdgeTable.push_back(tmp);
@@ -130,7 +128,7 @@ void SkPolygonFill(const vector<vector<int> > bounds )
 
 
   // Populate the global edge table
-  for( unsigned short int i = 0; i < bounds.size(); i++ )
+  for( unsigned int i = 0; i < bounds.size(); i++ )
   {
     PolyEdge::newEdge( i, globalEdgeTable, bounds );
   }
@@ -139,7 +137,7 @@ void SkPolygonFill(const vector<vector<int> > bounds )
   PolyEdge *activeEdgeList = NULL;
 
   // Then drawing if appropriate.
-  for( unsigned short int i = minScan; i <= maxScan; i++ )
+  for( int i = minScan; i <= maxScan; i++ )
   {
     // Prune old edges which are not needed,
     // Added new edges to the current scan line Active Edge List
@@ -176,16 +174,10 @@ void SkPolygonFill(const vector<vector<int> > bounds )
  *  @return           A pointer to the front of the modified AEL.
  */
 
-PolyEdge* PolyEdge::pruneAel( const unsigned short int indexOfGlet,
+PolyEdge* PolyEdge::pruneAel( const unsigned int indexOfGlet,
                               PolyEdge *activeEdgeList,
                               const vector<PolyEdge*> &globalEdgeTable )
 {
-  /*
-  if ( 2770 == indexOfGlet )
-  {
-    asm("int3");
-  }
-  */
   // Current and Next Edge
   PolyEdge *currEdge = activeEdgeList;
   PolyEdge *nextEdge = activeEdgeList->next;
@@ -236,76 +228,54 @@ PolyEdge* PolyEdge::pruneAel( const unsigned short int indexOfGlet,
  *
  */
 
-void PolyEdge::newEdge( const unsigned short int currentVertex,
+void PolyEdge::newEdge( const unsigned int currentVertex,
                         vector<PolyEdge*> &globalEdgeTable,
                         const vector<vector<int> > bounds )
 {
+  // Proper rollover for end edge
+  int previousVertex = ( currentVertex + 1 ) % bounds.size();
+
+  // Safely ignore lines with zero dy
+  if ( bounds[currentVertex][VERT_Y] ==  bounds[previousVertex][VERT_Y])
+  {
+	return;
+  }
+  int x1 = bounds[currentVertex][VERT_X];
+  int x2 = bounds[previousVertex][VERT_X];
+  int y1 = bounds[currentVertex][VERT_Y];
+  int y2 = bounds[previousVertex][VERT_Y];
+
+  if ( y1 > y2 ) 
+  {
+	  std::swap(y1,y2);
+	  std::swap(x1,x2);
+  }
 
   PolyEdge *currEdge = new PolyEdge;
-
-  unsigned short int scanline;
-
-  // Proper rollover for end edge
-  unsigned short int previousVertex = ( currentVertex + 1 ) % bounds.size();
-
-  std::cout << "Connecting Point:(" << bounds[previousVertex][VERT_X] << ","  
-	  						   << bounds[previousVertex][VERT_Y] << ") to Point:(" 
-	  						   << bounds[currentVertex][VERT_X] << "," 
-	  						   << bounds[currentVertex][VERT_Y] << ")" << std::endl;
-  // Decide which vertex is the smallest which is equivelant
-  // to the starting vertex in the GLET.
-  if ( bounds[currentVertex][VERT_Y] > bounds[previousVertex][VERT_Y] )
-  {
-    currEdge->y_max = bounds[currentVertex][VERT_Y];
-    currEdge->x = bounds[previousVertex][VERT_X];
-    scanline = bounds[previousVertex][VERT_Y];
-  }
-  else
-  {
-    currEdge->y_max = bounds[previousVertex][VERT_Y];
-    currEdge->x = bounds[currentVertex][VERT_X];
-    scanline = bounds[currentVertex][VERT_Y];
-  }
-
-  // Make sure we have a positive dy and dx.
-  currEdge->dx = abs( bounds[currentVertex][VERT_X]
-                      - bounds[previousVertex][VERT_X] );
-
-  currEdge->dy = abs( bounds[currentVertex][VERT_Y]
-                      - bounds[previousVertex][VERT_Y] );
-
-  // Initialize to default sane values.
-  currEdge->slope = 0;
+  currEdge->invSlope = (double) (x2-x1)/(y2-y1);
+  currEdge->y_max = y2;
+  currEdge->x = (x1 + (currEdge->invSlope/2.0));
+  currEdge->dx = (x2 - x1);
+  currEdge->dy = (y2 - y1);
   currEdge->next = NULL;
- 
-  asm("int3");
+  int scanline = y1;
+
   // If the current scan line happens to be empty
   // then just insert the previously created line segment.
   // Otherwise find the end (singly linked list), and insert it there.
-
   if( NULL != globalEdgeTable.at(scanline) )
   {
-    PolyEdge *nextEdge = globalEdgeTable.at(scanline);
     // Find End of current scanline
+    PolyEdge *nextEdge = globalEdgeTable.at(scanline);
     while( NULL != nextEdge->next )
     {
       nextEdge = nextEdge->next;
     }
-
-    if( 0 != currEdge->dy )
-    {
-      nextEdge->next = currEdge;
-    }
+    nextEdge->next = currEdge;
   }
-  else if( 0 != currEdge->dy )
+  else 
   {
     globalEdgeTable.at(scanline) = currEdge;
-  }
-
-  if( 0 == currEdge->dy )
-  {
-    delete currEdge;
-    currEdge = NULL;
   }
 }
 
@@ -323,26 +293,23 @@ void PolyEdge::newEdge( const unsigned short int currentVertex,
  *
  */
 
-void PolyEdge::drawAel( const unsigned short int currentScanline,
+void PolyEdge::drawAel( const unsigned int currentScanline,
                         PolyEdge *activeEdgeList )
 {
   // Current/Next Edge in the line.
   PolyEdge *currEdge = activeEdgeList;
 
   PolyEdge *nextEdge = activeEdgeList->next;
-
   while( NULL != currEdge && NULL != nextEdge )
   {
-  
     // Draw at each pixel on the current scan line (y-value).
     // Starting from the current Edge X, until we hit the x
     // of the next in the list.
-
 	glBegin(GL_POINTS);
-    for( unsigned short int j = currEdge->x; j < nextEdge->x; j++)
-    {
-    	glVertex2i( j, currentScanline );
-    }
+	for( double j = currEdge->x; j < nextEdge->x; j++)
+	{
+	  glVertex2i( (int)j, currentScanline );
+	}
 	glEnd();
     // Update the data members for current and next edges.
     currEdge = PolyEdge::updateEdge( currEdge );
@@ -371,26 +338,7 @@ void PolyEdge::drawAel( const unsigned short int currentScanline,
 
 PolyEdge* PolyEdge::updateEdge( PolyEdge *edge )
 {
-  if( ( 0 != edge->dx ) &&  ( 0 != edge->dy ) )
-  {
-    edge->slope += edge->dx;
-    // Move our x to the intercept of the current position
-    // in the edge (line segment).
-    while( edge->slope >= abs( edge->dy ) )
-    {
-
-      if( 0 < edge->dy )
-      {
-        (edge->x)++;
-      }
-      else
-      {
-        (edge->x)--;
-      }
-
-      edge->slope -= abs( edge->dy );
-    }
-  }
+  edge->x = edge->x + edge->invSlope;
   return edge;
 }
 
@@ -399,55 +347,81 @@ PolyEdge* PolyEdge::updateEdge( PolyEdge *edge )
  *  on the current scan line, sort on smallest x-values first then dx.
  *  Basic rough version of bubble sort.
  *
- *  @param[in] line      A pointer to starting Edge for the current scanline
+ *  @param[in,out] untainedList A pointer to starting Edge for the current scanline
  *
  *  @return         A pointer to the initial element in the sorted line.
  */
 
-PolyEdge* PolyEdge::sortLine( PolyEdge *line )
+PolyEdge* PolyEdge::sortLine(PolyEdge *untaintedList)
 {
-  PolyEdge *currEdge = line->next;
-  unsigned short int count;
-
-  // Find the number of edges on the given scanline
-  for ( count = 1; NULL != currEdge; currEdge = currEdge->next )
+  //Special cases for one node list and two node lists.
+  if ( NULL == untaintedList->next )
   {
-    count++;
+    return untaintedList;
   }
 
-  PolyEdge *nextEdge;
-  PolyEdge *frontEdge = line;
-
-  // Sort through N number (count) of times
-  // To make all items are in there proper place.
-  for( unsigned short int i = 0; i < count; i++ )
+  if( NULL == untaintedList->next->next )
   {
-    currEdge = line;
-    nextEdge = line->next;
+	PolyEdge *tmp = untaintedList->next;
+	if( tmp->x < untaintedList->x || 
+		( tmp->x == untaintedList->x  &&
+           ( tmp->dx < untaintedList->dx ) )) 
+	{
+	  tmp->next = untaintedList;
+	  untaintedList->next = NULL;
+	  untaintedList = tmp;
+	  return untaintedList;
+	}
+	else 
+	{
+	  return untaintedList;
+	}
+  }
 
-    while( NULL != nextEdge )
+  int numberNodes = 0;
+  // Find total number of nodes
+  for ( PolyEdge *tmp = untaintedList; NULL != tmp->next; tmp=tmp->next )
+  {
+    numberNodes++;
+  }
+ 
+  PolyEdge *prev;
+  PolyEdge *list;
+  PolyEdge *potentialPrev;
+  for ( int i = 0; i < numberNodes-1; i++ ) 
+  {
+	list = untaintedList;
+    prev = list;
+    for (int j = 0; list && list->next && ( j <= numberNodes-1-i ); j++ )
     {
-      if( ( nextEdge->x < currEdge->x ) ||
-          ( nextEdge->x == currEdge->x  &&
-             ( nextEdge->dx < currEdge->dx ) ) )
-      {
-        // Update the front pointer Edge if appropriate.
-        if( currEdge == frontEdge )
+	  //Check for first loop iteration, seed algorithm appropriately. 
+      //compare the two neighbors
+      if ( list->next->x < list->x ||
+		  ( list->next->x == list->x &&
+            list->next->dx < list->dx ) ) 
+      {  
+        PolyEdge *tmp = ( list->next ? list->next->next : 0 ); // Swap
+ 
+        if ( 0 == j && ( prev == untaintedList ) )
         {
-          frontEdge = nextEdge;
+		  // Move head to smallest x/dx;
+          untaintedList = list->next;
         }
-        // Swap
-        currEdge->next = nextEdge->next;
-        nextEdge->next = currEdge;
-        nextEdge = currEdge->next;
+        potentialPrev = list->next;
+        prev->next = list->next;
+        list->next->next = list;
+        list->next = tmp;
+        prev = potentialPrev;
       }
       else
       {
-        // Go on to the the next edge.
-        currEdge = nextEdge;
-        nextEdge = nextEdge->next;
-      }
-    }
+        list = list->next;
+        if( 0 < j )
+        {
+          prev = prev->next;
+        }
+      }     
+    } 
   }
-  return frontEdge;
+  return untaintedList;
 }

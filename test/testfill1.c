@@ -57,7 +57,7 @@ void display( void ) {
 	v.push_back(vtx);
 
 	glColor3f( 1.0, 0.0, 0.0 );	
-	//SkPolygonFill( v );
+	SkPolygonFill( v );
 
 	/*
 	** Quad from (40,30) to (30,50), CCW, LR, green
@@ -85,7 +85,7 @@ void display( void ) {
 	v1.push_back(vtx);
 
 	glColor3f( 0.0, 1.0, 0.0 );
-	//SkPolygonFill( v1 );
+	SkPolygonFill( v1 );
 
 	/*
 	** Quad, (10,70) to (40,90), UR, CW, blue
@@ -113,7 +113,7 @@ void display( void ) {
 	v2.push_back(vtx);
 
 	glColor3f( 0.0, 0.0, 1.0 );
-	//SkPolygonFill( v2 );
+	SkPolygonFill( v2 );
 
 	/*
 	** Quad, (10,210) to (40,230), UL, CW

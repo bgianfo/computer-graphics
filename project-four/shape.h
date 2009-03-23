@@ -1,7 +1,7 @@
 /*
 ** File:	shape.h
 ** Authors:	Christopher Kulla, Reynold Bailey
-** Contributors: J. Geigel, W. Carithers
+** Contributors: J. Geigel, W. Carithers, Brian Gianforcaro
 */
 
 #ifndef _SHAPE_H_

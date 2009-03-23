@@ -35,15 +35,15 @@ class PolyEdge
   private:
 
     /** Maximum y value for the line */
-    int y_max;
+    unsigned int y_max;
     /** The current x value to draw for the Edge. */
-    int x;
+    double x;
     /** Change in x of the line */
     int dx;
     /** Change in y of the line */
     int dy;
-    /** Used to update the dy/dx of the Edge */
-    int slope;
+    /** Inverse Slope Used to update the dy/dx of the Edge */
+    double invSlope;
     /** Pointer to the next line segment on the same scanline. */
     PolyEdge *next;
 
@@ -51,18 +51,19 @@ class PolyEdge
 
     static PolyEdge* updateEdge( PolyEdge *edge );
 
-    static PolyEdge* sortLine( PolyEdge *line );
+    static PolyEdge* sortLine( PolyEdge *list );
+    //static void sortLine( PolyEdge *line );
 
-    static PolyEdge* pruneAel( const unsigned short int indexOfGlet,
+    static PolyEdge* pruneAel( const unsigned int indexOfGlet,
                                PolyEdge *activeEdgeList,
                                const std::vector<PolyEdge*> &globalEdgeTable );
 
-    static void newEdge( const unsigned short int currentVertex,
+    static void newEdge( const unsigned int currentVertex,
                          std::vector<PolyEdge*> &globalEdgeTable,
                          const std::vector<std::vector<int> > bounds );
 
 
-    static void drawAel( const unsigned short int currentScanline,
+    static void drawAel( const unsigned int currentScanline,
                          PolyEdge *activeEdgeList );
 };
 
